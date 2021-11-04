@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser, setError } from "../redux/actions/loginActions";
 import Header from "./Header";
 import ValidateInput from "../middleware/ValidateInput";
 
 export default () => {
   const username = useFormInput("");
   const password = useFormInput("");
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+  const error = useSelector((state) => state.user.error);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -27,15 +31,18 @@ export default () => {
         },
       })
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
+          dispatch(
+            loginUser({ username: username.value, token: response.data.token })
+          );
           navigate("/dashboard");
         })
         .catch((err) => {
-          setError(error);
-          console.log("Error occurred: ", error);
+          dispatch(setError(err.response.data.error));
+          console.log("Error occurred: ", err);
         });
     } else {
-      setError("Invalid username or password.");
+      dispatch(setError("Invalid username or password."));
     }
     e.preventDefault();
   };
@@ -46,17 +53,13 @@ export default () => {
       <form onSubmit={handleSubmit}>
         <label>
           Username
-          <input type="text" placeholder="Your Name or Email" {...username} />
+          <input type="text" placeholder="someone@example.com" {...username} />
           <span>Name 5 to 20 characters or Email.</span>
         </label>
         <label>
           Password
-          <input
-            type="password"
-            placeholder="Alphabets and/or Numbers"
-            {...password}
-          />
-          <span>Password 6 to 20 characters.</span>
+          <input type="password" {...password} />
+          <span>Alphabets and/or Numbers (6 to 20 characters).</span>
         </label>
         <input type="submit" value="Login" />
       </form>
