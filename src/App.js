@@ -5,7 +5,6 @@ import RouterComponent from "./components/RouterComponent";
 function App() {
   return (
     <div className="App">
-      <Header />
       <RouterComponent />
     </div>
   );
