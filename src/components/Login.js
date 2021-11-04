@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import ValidateInput from "../middleware/ValidateInput";
@@ -14,7 +15,25 @@ export default () => {
       ValidateInput(username.value, "username") &&
       ValidateInput(password.value, "password")
     ) {
-      navigate("/dashboard");
+      axios({
+        method: "POST",
+        url: "https://reqres.in/api/login",
+        headers: {
+          "content-type": "application/json",
+        },
+        data: {
+          username: username.value,
+          password: password.value,
+        },
+      })
+        .then((response) => {
+          console.log(response.data);
+          navigate("/dashboard");
+        })
+        .catch((err) => {
+          setError(error);
+          console.log("Error occurred: ", error);
+        });
     } else {
       setError("Invalid username or password.");
     }
